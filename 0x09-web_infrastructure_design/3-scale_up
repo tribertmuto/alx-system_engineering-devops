@@ -1,0 +1,76 @@
+# Scale Up Infrastructure
+
+## Scenario
+A user wants to access the website at `www.foobar.com` using a highly scalable infrastructure with separated components and redundant load balancing.
+
+## Step-by-step Flow
+1. The user enters `https://www.foobar.com` in their browser.
+2. The browser queries DNS to resolve `www.foobar.com` to the clustered load balancer's IP address.
+3. The browser establishes an HTTPS connection with the active load balancer.
+4. The clustered load balancers (HAProxy) distribute the request to one of the dedicated web servers using a load balancing algorithm.
+5. The dedicated web server (Nginx) processes static content and forwards dynamic requests to a dedicated application server.
+6. The dedicated application server processes the business logic and queries the dedicated database server.
+7. The response flows back through the application server → web server → load balancer → user.
+
+## Infrastructure Components
+
+### Servers (4 total)
+- **1 Dedicated Web Server:** Runs only Nginx for handling HTTP/HTTPS requests and serving static content
+- **1 Dedicated Application Server:** Runs only the application code and business logic
+- **1 Dedicated Database Server:** Runs only MySQL for data storage and retrieval
+- **1 Additional Server:** Hosts the second load balancer for clustering
+
+### Load Balancer Cluster
+- **2 Load Balancers (HAProxy):** Configured as a cluster with one active and one standby for high availability
+- **Clustering Benefits:** Eliminates the load balancer as a single point of failure
+
+## Additional Elements and Their Purpose
+
+### Component Separation
+- **Dedicated Web Server:** Isolates web serving functionality, allows independent scaling and optimization for static content delivery
+- **Dedicated Application Server:** Isolates business logic, enables focused resource allocation for compute-intensive tasks
+- **Dedicated Database Server:** Isolates data operations, allows database-specific optimizations and security hardening
+
+### Clustered Load Balancers
+- **High Availability:** If one load balancer fails, the other takes over automatically
+- **Load Distribution:** Can handle more concurrent connections across multiple load balancers
+- **Maintenance:** Allows rolling updates without service interruption
+
+## Advantages of This Architecture
+
+### Scalability
+- **Horizontal Scaling:** Each component can be scaled independently based on demand
+- **Resource Optimization:** Each server can be tuned for its specific role (CPU for app server, RAM for database, etc.)
+
+### Reliability
+- **Fault Isolation:** Failure in one component type doesn't affect others
+- **Load Balancer Redundancy:** Eliminates the last single point of failure from previous designs
+
+### Performance
+- **Specialized Hardware:** Each server can use hardware optimized for its role
+- **Reduced Resource Contention:** Components don't compete for the same server resources
+
+### Maintenance
+- **Independent Updates:** Each component can be updated without affecting others
+- **Targeted Troubleshooting:** Issues can be isolated to specific component types
+
+## Web Server vs Application Server
+
+### Web Server (Nginx)
+- **Purpose:** Handle HTTP/HTTPS requests, serve static files, SSL termination, request routing
+- **Optimized for:** I/O operations, concurrent connections, static content delivery
+- **Examples:** Nginx, Apache HTTP Server, IIS
+
+### Application Server
+- **Purpose:** Execute business logic, process dynamic content, handle application-specific tasks
+- **Optimized for:** CPU-intensive operations, memory management, application runtime
+- **Examples:** Gunicorn (Python), Tomcat (Java), Node.js, PHP-FPM
+
+## Security Considerations
+- Each server type can have role-specific firewall rules
+- Database server can be completely isolated from public internet
+- Application server only needs to communicate with web server and database
+- Web server only needs to handle public HTTP/HTTPS traffic
+
+---
+This architecture provides maximum scalability, reliability, and performance by separating concerns and eliminating single points of failure through load balancer clustering.
