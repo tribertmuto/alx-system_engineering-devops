@@ -1,0 +1,34 @@
+# Secured and Monitored Web Infrastructure
+
+## Scenario
+A user wants to access the website at `www.foobar.com` securely, with traffic encrypted and the infrastructure monitored.
+
+## Step-by-step Flow
+1. The user enters `https://www.foobar.com` in their browser.
+2. The browser queries DNS to resolve `www.foobar.com` to the load balancer's IP address.
+3. The browser establishes an HTTPS connection with the load balancer, which presents an SSL certificate for encryption.
+4. The load balancer (HAProxy) distributes the request to one of the web servers (Nginx) using a load balancing algorithm.
+5. Each server is protected by a firewall, allowing only necessary traffic (e.g., HTTP/HTTPS, database, monitoring).
+6. The web server forwards the request to the application server.
+7. The application server processes the request, interacts with the database (MySQL), and returns the response.
+8. Monitoring clients on each server collect metrics and logs, sending them to a monitoring service (e.g., Sumologic).
+9. The response is sent back to the user over the encrypted HTTPS connection.
+
+## Additional Elements and Their Purpose
+- **Firewalls:** Added to each server to restrict incoming and outgoing traffic, improving security by blocking unauthorized access.
+- **SSL Certificate:** Enables HTTPS, encrypting data between the user and the load balancer to protect against eavesdropping and tampering.
+- **Monitoring Clients:** Collect metrics (CPU, memory, QPS, etc.) and logs, sending them to a central monitoring service for analysis and alerting.
+
+## Security and Monitoring
+- **Firewalls:** Protect servers from unauthorized access and attacks by only allowing specific ports and IPs.
+- **HTTPS:** Ensures data privacy and integrity between the user and the server.
+- **Monitoring:** Detects failures, performance issues, and security incidents. Monitoring tools collect data via agents installed on each server, which send logs and metrics to a central dashboard.
+- **Monitoring QPS (Queries Per Second):** Configure the monitoring tool to collect and visualize web server QPS by parsing access logs or using built-in metrics exporters.
+
+## Issues with This Infrastructure
+- **SSL Termination at Load Balancer:** If SSL is terminated at the load balancer, traffic between the load balancer and backend servers is unencrypted, exposing data to internal threats.
+- **Single MySQL Write Node:** Only one MySQL server can accept writes, creating a bottleneck and a single point of failure for data writes.
+- **Identical Server Components:** If all servers run the same components (web, app, database), a compromise or failure can affect all services, reducing isolation and increasing risk.
+
+---
+This setup provides improved security and monitoring but still has some architectural limitations that should be addressed for higher availability and security.

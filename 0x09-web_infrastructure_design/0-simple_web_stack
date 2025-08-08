@@ -1,0 +1,32 @@
+# Simple Web Stack Infrastructure
+
+## Scenario
+A user wants to access the website at `www.foobar.com`.
+
+## Step-by-step Flow
+1. The user enters `www.foobar.com` in their browser.
+2. The browser queries the DNS to resolve `www.foobar.com` to an IP address (8.8.8.8).
+3. The browser sends an HTTP request to 8.8.8.8.
+4. The request reaches the server at 8.8.8.8, where Nginx (the web server) listens for incoming requests.
+5. Nginx forwards the request to the application server (e.g., Gunicorn for Python, PHP-FPM for PHP).
+6. The application server executes the application code (application files/code base).
+7. If data is needed, the application server queries the MySQL database.
+8. The application server returns the response to Nginx, which then sends it back to the user's browser.
+
+## Components
+- **Server:** A physical or virtual machine that runs the web, application, and database servers.
+- **Domain Name:** `foobar.com` is a human-readable address mapped to the server's IP (8.8.8.8) via DNS.
+- **DNS Record:** The `www` in `www.foobar.com` is a subdomain, typically set up as an A record pointing to 8.8.8.8.
+- **Web Server (Nginx):** Handles HTTP requests, serves static files, and forwards dynamic requests to the application server.
+- **Application Server:** Runs the application code, processes business logic, and interacts with the database.
+- **Application Files:** The code base that implements the website's functionality.
+- **Database (MySQL):** Stores and retrieves persistent data for the application.
+- **Communication:** The server communicates with the user's computer over the HTTP protocol (TCP/IP).
+
+## Issues with This Infrastructure
+- **SPOF (Single Point of Failure):** If the server fails, the entire website becomes unavailable.
+- **Downtime During Maintenance:** Deploying new code or restarting the web server causes downtime.
+- **Scalability:** The server cannot handle high traffic; performance degrades as load increases.
+
+---
+This setup is simple and cost-effective for small projects but is not suitable for high availability or scalability requirements.

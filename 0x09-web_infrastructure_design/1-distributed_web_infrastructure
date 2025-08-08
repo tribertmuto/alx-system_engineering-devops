@@ -1,0 +1,44 @@
+# Distributed Web Infrastructure
+
+## Scenario
+A user wants to access the website at `www.foobar.com`.
+
+## Step-by-step Flow
+1. The user enters `www.foobar.com` in their browser.
+2. The browser queries DNS to resolve `www.foobar.com` to the load balancer's IP address.
+3. The browser sends an HTTP request to the load balancer (HAProxy).
+4. The load balancer distributes the request to one of the web servers (Nginx) using a configured algorithm (e.g., round-robin).
+5. The web server forwards the request to the application server.
+6. The application server processes the request, interacts with the database (MySQL), and returns the response.
+7. The web server sends the response back to the load balancer, which forwards it to the user's browser.
+
+## Components
+- **Load Balancer (HAProxy):** Distributes incoming traffic across multiple servers to improve availability and scalability. Here, it uses the round-robin algorithm, which cycles through servers in order, sending each new request to the next server in the list.
+- **Web Server (Nginx):** Handles HTTP requests and forwards dynamic requests to the application server.
+- **Application Server:** Runs the application code and business logic.
+- **Application Files:** The code base, deployed identically on all application servers.
+- **Database (MySQL):** Stores persistent data. Can be set up as a Primary-Replica (Master-Slave) cluster for redundancy and scalability.
+- **Servers:** Three servers are used: two for web/app servers and one for the database.
+
+## Additional Elements and Their Purpose
+- **Load Balancer:** Added to distribute traffic, prevent overloading a single server, and provide high availability.
+- **Multiple Servers:** Added for redundancy and to handle more traffic.
+- **Database Replication:** Primary-Replica setup allows read scalability and failover.
+
+## Load Balancer Configuration
+- **Algorithm:** Round-robin (default). Each request is sent to the next server in the pool, balancing the load evenly.
+- **Active-Active vs. Active-Passive:**
+  - **Active-Active:** All backend servers handle requests simultaneously (used here).
+  - **Active-Passive:** Only one server is active; others are on standby for failover.
+
+## Database Primary-Replica Cluster
+- **Primary Node:** Handles all write operations.
+- **Replica Node:** Handles read operations and replicates data from the primary. The application reads from replicas and writes to the primary.
+
+## Issues with This Infrastructure
+- **SPOF:** The load balancer and the database primary node are single points of failure.
+- **Security:** No firewall or HTTPS; vulnerable to attacks and data interception.
+- **No Monitoring:** No system in place to detect failures or performance issues.
+
+---
+This setup improves availability and scalability but still has critical points of failure and lacks security and monitoring.
