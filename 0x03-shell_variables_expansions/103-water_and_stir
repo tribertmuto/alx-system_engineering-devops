@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "$((2#$(echo $WATER | tr 'water' '01234') + 2#$(echo $STIR | tr 'stir' '0123')))" | awk '{n=$1; r=""; a="bestchol"; while(n>0){r=substr(a,n%9+1,1) r; n=int(n/9);} print r}'
+printf "%o\n" $(( $((5#$(echo $WATER | tr 'water' '01234'))) + $((4#$(echo $STIR | tr 'stir.' '0123'))) )) | tr "01234567" "bestchol"
